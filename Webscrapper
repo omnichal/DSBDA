@@ -1,0 +1,42 @@
+!pip install bs4
+
+!pip install requests
+
+from bs4 import BeautifulSoup as bs
+import requests
+
+URL = "https://www.amazon.in/Apple-iPhone-14-128GB-Midnight/product-reviews/B0BDHX8Z63/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=a"
+
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"}
+
+
+webpage = requests.get(URL,HEADERS)
+webpage
+
+content = webpage.content
+content
+
+
+type(content)
+
+soup = bs(content,'html.parser')
+soup
+
+
+names = soup.find_all('span',class_='a-profile-name')
+names
+
+cust_name = []
+for i in range (len(names)):
+    cust_name.append(names[i].get_text())
+cust_name
+
+
+title = soup.find_all('a',class_='review-title-content')
+title
+
+
+review_title = []
+for i in range (0,len(title)):
+    review_title.append(title[i].get_text())
+review_title
