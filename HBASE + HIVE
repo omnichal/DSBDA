@@ -1,0 +1,53 @@
+HBASE
+
+hbase shell
+
+create 'employee','personal','professional'
+
+scan 'employee'
+
+
+put 'employee', '1', 'personal:name', 'sam'
+put 'employee', '1', 'personal:age', '30'
+put 'employee', '1', 'professional:salary', '19000'
+put 'employee', '1', 'professional:dept', 'BigData'
+put 'employee', '2', 'personal:name', 'peter'
+put 'employee', '2', 'professional:salary', '20000'
+put 'employee', '3', 'personal:name', 'george'
+
+
+scan 'employee'
+
+
+
+
+
+
+HIVE
+
+hive
+
+show tables;
+
+create external table emp_hbase(key string, name string, age string, salary string, dept string)
+stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+with serdeproperties ("hbase.columns.mapping"=":key,personal:name,personal:age,professional:dept,professional:salary")
+tblproperties("hbase.table.name"="employee");
+
+
+select * from emp_hbase;
+
+insert into table emp_hbase values ('5','abc','45','30000','admin');
+
+select * from emp_hbase;
+
+
+
+
+
+
+
+HBASE
+
+
+scan 'employee'
