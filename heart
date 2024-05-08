@@ -1,0 +1,100 @@
+import pandas as pd
+import numpy as np
+import seaborn  as sns
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score,confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+
+df = pd.read_csv('E:/Coding/DSBDA/PRACTICAL/Air n Heart/Heart Attack Data Set.csv')
+df
+
+df.describe()
+
+df = df.drop_duplicates()
+
+df.info()
+
+df.isna().sum()
+
+df.fbs.unique()
+
+df1 = df[['age','cp','chol','thalach']]
+df1
+
+df2 = df[['exang','slope','target']]
+df2
+
+merged_df = df1.merge(right=df2,how='cross')
+merged_df.head()
+
+df.columns
+
+def remove_outliers(column):
+    Q1 = column.quantile(0.25)
+    Q3 = column.quantile(0.75)
+    IQR = Q3 - Q1
+    threshold = 1.5 * IQR
+    outlier_mask = (column < Q1 - threshold) | (column > Q3 + threshold)
+    return column[~outlier_mask]
+
+col_name = ['cp','thalach','exang','oldpeak','slope','ca']
+for col in col_name:
+    df[col] = remove_outliers(df[col])
+
+plt.figure(figsize=(10, 6))
+
+for col in col_name:
+    sns.boxplot(data=df[col])
+    plt.title(col)
+    plt.show()
+
+df = df.dropna()
+
+df.isna().sum()
+
+df=df.drop('fbs',axis=1)
+
+corr=df.corr()['target'].drop('target')
+print('Correlation with Targets:')
+print(corr)
+plt.figure(figsize=(8, 6))
+sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
+plt.title('Correlation Heatmap')
+plt.show()
+
+x = df[['cp','thalach','exang','oldpeak','slope','ca']]
+y = df.target
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.2,random_state=0)
+
+x_train.shape,x_test.shape,y_train.shape,y_test.shape
+
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+
+x_train_scaled = scaler.fit_transform(x_train)
+x_test_scaled = scaler.transform(x_test)
+
+y_train= np.array(y_train).reshape(-1, 1)
+y_test= np.array(y_test).reshape(-1, 1)
+
+y_train.shape
+
+model = LogisticRegression()
+model.fit(x_train_scaled, y_train)
+
+
+y_pred = model.predict(x_test_scaled)
+
+
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy)
+
+from sklearn.tree import DecisionTreeClassifier
+tc=DecisionTreeClassifier(criterion='entropy')
+tc.fit(x_train_scaled,y_train)
+y_pred=tc.predict(x_test_scaled)
+
+print("Training Accuracy Score :",accuracy_score(y_pred,y_test))
+print("Training Confusion Matrix  :",confusion_matrix(y_pred,y_test))
