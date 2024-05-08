@@ -41,3 +41,7 @@ merge
 
 pivot = pd.pivot_table(df,index=['Type', 'Category'],values='like')
 print(pivot)
+
+
+melt = pd.melt(df)
+melt
