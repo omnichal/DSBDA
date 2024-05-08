@@ -1,0 +1,29 @@
+-- A. Create a Table
+CREATE DATABASE IF NOT EXISTS flight_system;
+USE flight_system;
+
+-- Create Flight Information Table
+CREATE TABLE IF NOT EXISTS flight_information (
+    flight_date DATE,
+    flight_number STRING,
+    departure_delay INT
+);
+
+-- B. Load table with data
+-- Assuming you have a data file named 'flight_data.csv'
+-- Loading data into flight_information table
+LOAD DATA LOCAL INPATH '/path/to/flight_data.csv' OVERWRITE INTO TABLE flight_information
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' 
+LINES TERMINATED BY '\n' 
+IGNORE 1 LINES;
+
+-- C. Create index on Flight Information Table
+-- Creating index on flight_date column
+CREATE INDEX flight_date_index ON TABLE flight_information(flight_date);
+
+-- D. Find the average departure delay per day in 2008
+-- Filtering data for the year 2008 and calculating average departure delay per day
+SELECT flight_date, AVG(departure_delay) AS avg_departure_delay
+FROM flight_information
+WHERE YEAR(flight_date) = 2008
+GROUP BY flight_date;
